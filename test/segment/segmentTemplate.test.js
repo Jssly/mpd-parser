@@ -90,6 +90,17 @@ QUnit.test('honors padding format tag', function(assert) {
   );
 });
 
+QUnit.test('convert number to hex format', function(assert) {
+  assert.equal(
+    constructTemplateUrl(
+      '/$Number%03x$/segment.mp4',
+      { Number: 10 }
+    ),
+    '/00a/segment.mp4',
+    'correctly convert number to hex form'
+  );
+});
+
 QUnit.test('does not add padding when value is longer than width', function(assert) {
   assert.equal(
     constructTemplateUrl(
