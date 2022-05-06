@@ -3,7 +3,7 @@ import urlTypeToSegment from './urlType';
 import { parseByTimeline } from './timelineTimeParser';
 import { parseByDuration } from './durationTimeParser';
 
-const identifierPattern = /\$([A-z]*)(?:(%0)([0-9]+)d)?\$/g;
+const identifierPattern = /\$([A-z]*)(?:(%0)([0-9]+)([d,x]))?\$/g;
 
 /**
  * Replaces template identifiers with corresponding values. To be used as the callback
@@ -41,7 +41,7 @@ const identifierPattern = /\$([A-z]*)(?:(%0)([0-9]+)d)?\$/g;
  * @return {replaceCallback}
  *         Callback to be used with String.prototype.replace to replace identifiers
  */
-export const identifierReplacement = (values) => (match, identifier, format, width) => {
+export const identifierReplacement = (values) => (match, identifier, format, width, base) => {
   if (match === '$$') {
     // escape sequence
     return '$';
@@ -51,7 +51,7 @@ export const identifierReplacement = (values) => (match, identifier, format, wid
     return match;
   }
 
-  const value = '' + values[identifier];
+  let value = '' + values[identifier];
 
   if (identifier === 'RepresentationID') {
     // Format tag shall not be present with RepresentationID
@@ -62,6 +62,10 @@ export const identifierReplacement = (values) => (match, identifier, format, wid
     width = 1;
   } else {
     width = parseInt(width, 10);
+  }
+  
+  if(base ==='x') {
+    value = parseInt(value).toString(16)
   }
 
   if (value.length >= width) {
