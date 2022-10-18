@@ -1,5 +1,5 @@
 import { values } from './utils/object';
-import { findIndex, findIndexes } from './utils/list';
+import { findIndexes } from './utils/list';
 import { addSidxSegmentsToPlaylist as addSidxSegmentsToPlaylist_ } from './segment/segmentBase';
 import { byteRangeToString } from './segment/urlType';
 import {
@@ -217,7 +217,7 @@ export const organizeAudioPlaylists = (playlists, sidxMapping = {}, isAudioOnly 
 
 export const organizeVttPlaylists = (playlists, sidxMapping = {}) => {
   return playlists.reduce((a, playlist) => {
-    const label = playlist.attributes.lang || 'text';
+    const label = playlist.attributes.label || playlist.attributes.lang || 'text';
 
     if (!a[label]) {
       a[label] = {
@@ -296,6 +296,10 @@ export const formatVideoPlaylist = ({
     segments
   };
 
+  if (attributes.frameRate) {
+    playlist.attributes['FRAME-RATE'] = attributes.frameRate;
+  }
+
   if (attributes.contentProtection) {
     playlist.contentProtection = attributes.contentProtection;
   }
@@ -348,7 +352,11 @@ export const addMediaSequenceValues = (playlists, timelineStarts) => {
   // increment all segments sequentially
   playlists.forEach((playlist) => {
     playlist.mediaSequence = 0;
-    playlist.discontinuitySequence = findIndex(timelineStarts, ({ timeline }) => timeline === playlist.timeline);
+    playlist.discontinuitySequence = timelineStarts.findIndex(function({
+      timeline
+    }) {
+      return timeline === playlist.timeline;
+    });
 
     if (!playlist.segments) {
       return;

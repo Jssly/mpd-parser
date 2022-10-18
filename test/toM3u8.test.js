@@ -42,6 +42,7 @@ QUnit.test('playlists', function(assert) {
       codecs: 'foo;bar',
       duration: 0,
       bandwidth: 10000,
+      frameRate: 30,
       periodStart: 0,
       mimeType: 'video/mp4',
       type: 'static'
@@ -187,6 +188,7 @@ QUnit.test('playlists', function(assert) {
         BANDWIDTH: 10000,
         CODECS: 'foo;bar',
         NAME: '1',
+        ['FRAME-RATE']: 30,
         ['PROGRAM-ID']: 1,
         RESOLUTION: {
           height: 600,
@@ -909,10 +911,27 @@ QUnit.test('playlists with label', function(assert) {
       type: 'static'
     },
     segments: []
+  }, {
+    attributes: {
+      sourceDuration: 100,
+      id: '1',
+      width: 800,
+      height: 600,
+      codecs: 'foo;bar',
+      duration: 0,
+      bandwidth: 10000,
+      periodStart: 0,
+      mimeType: 'text/vtt',
+      type: 'static',
+      label
+    },
+    segments: []
   }];
   const output = toM3u8({ dashPlaylists });
 
   assert.ok(label in output.mediaGroups.AUDIO.audio, 'label exists');
+  assert.ok(label in output.mediaGroups.SUBTITLES.subs, 'label exists');
+
 });
 
 QUnit.test('608 captions', function(assert) {
